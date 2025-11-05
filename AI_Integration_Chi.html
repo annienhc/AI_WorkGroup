@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>語文學科 - AI融合評估</title>
+    <style>
+        body{font-family:'Microsoft JhengHei','微軟正黑體','PingFang TC','Apple LiGothic Medium','Heiti TC',sans-serif;background:linear-gradient(135deg,#e3f2fd 0%,#f5f5f5 50%,#e0e0e0 100%);margin:0;padding:20px;color:#333333;min-height:100vh}
+        .container{max-width:1400px;margin:0 auto;background:#ffffff;border-radius:24px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.12)}
+        header{background:linear-gradient(135deg,#1976d2 0%,#42a5f5 100%);color:#ffffff;padding:50px 40px;text-align:center;position:relative;overflow:hidden}
+        header::before{content:'';position:absolute;top:-50%;right:-10%;width:400px;height:400px;background:rgba(255,255,255,0.1);border-radius:50%;animation:pulse 4s ease-in-out infinite}
+        header::after{content:'';position:absolute;bottom:-30%;left:-5%;width:300px;height:300px;background:rgba(255,255,255,0.08);border-radius:50%;animation:pulse 6s ease-in-out infinite}
+        @keyframes pulse{0%,100%{transform:scale(1);opacity:0.5}50%{transform:scale(1.1);opacity:0.8}}
+        .discipline-title{font-size:2.5em;font-weight:700;margin:0;letter-spacing:1px;text-transform:uppercase;position:relative;z-index:1}
+        .assessment-title{font-size:1.3em;margin:15px 0 0 0;font-weight:400;position:relative;z-index:1}
+        .section-header{background:linear-gradient(135deg,#e3f2fd 0%,#bbdefb 100%);padding:20px 30px;margin:0;border-radius:0;clip-path:polygon(0 0,100% 0,100% 85%,0 100%)}
+        .section-header h2{margin:0;color:#1565c0;font-size:1.5em;font-weight:700;text-transform:uppercase;letter-spacing:0.5px}
+        .section-subtitle{margin:5px 0 0 0;font-size:1em;font-weight:400;color:#1976d2}
+        .framework-section{padding:0}
+        .framework-toggle-bar{background:linear-gradient(135deg,#e3f2fd 0%,#bbdefb 100%);padding:20px 30px;margin:0;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .3s;user-select:none;position:relative;overflow:hidden}
+        .framework-toggle-bar::before{content:'';position:absolute;left:0;top:0;width:100%;height:100%;background:linear-gradient(135deg,transparent 0%,rgba(255,255,255,0.3) 100%);transform:translateX(-100%);transition:transform .4s ease}
+        .framework-toggle-bar:hover::before{transform:translateX(100%)}
+        .framework-toggle-bar:hover{background:linear-gradient(135deg,#bbdefb 0%,#90caf9 100%);transform:translateX(4px)}
+        .framework-toggle-bar .title-section{flex:1}
+        .framework-toggle-bar h2{margin:0;color:#1565c0;font-size:1.5em;font-weight:700;text-transform:uppercase;letter-spacing:0.5px}
+        .framework-toggle-bar .section-subtitle{margin:5px 0 0 0;font-size:1em;font-weight:400;color:#1976d2}
+        .framework-toggle-bar .icon{font-size:1.3em;color:#1565c0;transition:transform .3s;font-weight:bold;margin-left:20px}
+        .framework-toggle-bar.active{background:linear-gradient(135deg,#90caf9 0%,#64b5f6 100%)}
+        .framework-toggle-bar.active .icon{transform:rotate(180deg)}
+        .framework-content{background:#ffffff;padding:0;margin:0;max-height:0;overflow:hidden;transition:all .4s ease-out}
+        .framework-content.active{max-height:2500px;padding:35px 40px;margin-top:0}
+        .framework-content h3{color:#1565c0;margin-bottom:20px;font-size:1.4em;margin-top:0;padding-bottom:12px;border-bottom:3px solid #90caf9;font-weight:700;border-radius:2px}
+        .level-box{background:linear-gradient(135deg,#ffffff 0%,#e3f2fd 100%);border:none;border-left:5px solid #42a5f5;padding:18px 20px;margin:15px 0;border-radius:12px;box-shadow:0 2px 8px rgba(25,118,210,0.1);transition:all .3s}
+        .level-box:hover{transform:translateX(8px);box-shadow:0 4px 16px rgba(25,118,210,0.2)}
+        .level-box strong{color:#1565c0;display:block;margin-bottom:10px;font-size:1.1em}
+        .level-box p{margin:4px 0;font-size:1em;line-height:1.6;color:#424242}
+        .form-section{padding:40px}
+        .module-info{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-bottom:35px;padding:30px;background:linear-gradient(135deg,#ffffff 0%,#e3f2fd 100%);border-radius:16px;box-shadow:0 4px 16px rgba(0,0,0,0.08)}
+        .module-info label{display:block;margin-bottom:8px;font-weight:700;color:#1565c0;font-size:1em;text-transform:uppercase;letter-spacing:0.5px}
+        .module-info input,.module-info select{width:100%;padding:12px 16px;border:2px solid #90caf9;font-size:1.05em;transition:all .2s;box-sizing:border-box;background:#ffffff;color:#333333;border-radius:8px}
+        .module-info input:focus,.module-info select:focus{outline:none;border-color:#42a5f5;box-shadow:0 0 0 4px rgba(66,165,245,0.15);transform:translateY(-2px)}
+        .dimensions{display:grid;grid-template-columns:1fr;gap:25px;margin-top:30px}
+        @media(min-width:1100px){.dimensions{grid-template-columns:repeat(2,1fr)}}
+        .dimension{background:linear-gradient(135deg,#ffffff 0%,#fafafa 100%);border:none;padding:28px;transition:all .3s;border-radius:16px;box-shadow:0 4px 12px rgba(0,0,0,0.08);position:relative;overflow:hidden}
+        .dimension::before{content:'';position:absolute;top:0;left:0;width:100%;height:4px;background:linear-gradient(90deg,#1976d2,#42a5f5,#90caf9);transform:scaleX(0);transform-origin:left;transition:transform .3s ease}
+        .dimension:hover::before{transform:scaleX(1)}
+        .dimension:hover{transform:translateY(-4px);box-shadow:0 8px 24px rgba(25,118,210,0.15)}
+        .dim-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;padding-bottom:14px;border-bottom:2px solid #90caf9}
+        .dim-title{font-weight:700;color:#1565c0;font-size:1.25em;flex:1}
+        .dim-number{display:inline-block;background:linear-gradient(135deg,#1976d2 0%,#42a5f5 100%);color:#ffffff;width:40px;height:40px;text-align:center;line-height:40px;font-weight:bold;margin-right:14px;font-size:1em;border-radius:10px;box-shadow:0 2px 8px rgba(25,118,210,0.3)}
+        .dim-score{font-weight:bold;font-size:2.2em;color:#1976d2;min-width:55px;text-align:right}
+        .dim-description{font-size:1em;color:#424242;margin-bottom:18px;line-height:1.7;padding:14px 16px;background:linear-gradient(135deg,#e3f2fd 0%,#bbdefb 100%);border-left:4px solid #42a5f5;border-radius:8px}
+        .score-guide{background:#ffffff;border:2px solid #e3f2fd;padding:16px 18px;margin-bottom:18px;font-size:0.95em;line-height:1.7;color:#424242;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
+        .score-guide-title{font-weight:700;color:#1565c0;margin-bottom:14px;font-size:1.1em}
+        .score-content{display:flex;flex-direction:column;gap:10px}
+        .score-guide-item{display:flex;align-items:center;gap:12px;padding:8px 0}
+        .score-btn-inline{width:50px;height:50px;min-width:50px;border:2px solid #90caf9;background:#ffffff;font-weight:bold;font-size:1.4em;cursor:pointer;transition:all .25s;display:flex;align-items:center;justify-content:center;color:#1976d2;border-radius:50%;position:relative;overflow:hidden}
+        .score-btn-inline::before{content:'';position:absolute;width:100%;height:100%;background:linear-gradient(135deg,#e3f2fd,#bbdefb);transform:scale(0);border-radius:50%;transition:transform .3s ease;z-index:0}
+        .score-btn-inline:hover::before{transform:scale(1)}
+        .score-btn-inline:hover{border-color:#42a5f5;transform:scale(1.15) rotate(5deg);box-shadow:0 4px 12px rgba(66,165,245,0.3)}
+        .score-btn-inline.selected{background:linear-gradient(135deg,#1976d2 0%,#42a5f5 100%);color:#ffffff;transform:scale(1.2);border-color:#1565c0;box-shadow:0 4px 16px rgba(25,118,210,0.4)}
+        .score-btn-inline.selected::before{transform:scale(1);background:transparent}
+        .score-btn-inline span{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;width:100%;height:100%}
+        .score-guide-item>span{color:#424242;line-height:1.6;flex:1;font-size:1.05em}
+        .evidence{margin-top:18px}
+        .evidence label{display:block;font-weight:600;color:#1565c0;margin-bottom:10px;font-size:1em;text-transform:uppercase}
+        .evidence textarea{width:100%;padding:14px 16px;border:2px solid #90caf9;resize:vertical;min-height:80px;font-size:1em;font-family:inherit;box-sizing:border-box;transition:all .2s;background:#ffffff;line-height:1.6;color:#333333;border-radius:10px}
+        .evidence textarea:focus{outline:none;border-color:#42a5f5;box-shadow:0 0 0 4px rgba(66,165,245,0.15);transform:translateY(-2px)}
+        .evidence textarea::placeholder{color:#9e9e9e}
+        .summary{background:linear-gradient(135deg,#1565c0 0%,#1976d2 50%,#42a5f5 100%);color:#ffffff;padding:40px;margin:40px 0 0 0;border-radius:20px;box-shadow:0 8px 32px rgba(25,118,210,0.3);position:relative;overflow:hidden}
+        .summary::before{content:'';position:absolute;top:-50%;right:-20%;width:500px;height:500px;background:rgba(255,255,255,0.1);border-radius:50%;animation:pulse 8s ease-in-out infinite}
+        .summary h2{margin:0 0 25px 0;text-align:center;font-size:2em;font-weight:700;text-transform:uppercase;position:relative;z-index:1}
+        .summary-subtitle{text-align:center;font-size:1.05em;margin:-15px 0 25px 0;font-style:italic;opacity:0.9;position:relative;z-index:1}
+        .summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:25px;margin-top:20px;position:relative;z-index:1}
+        .summary-item{background:#ffffff;color:#1565c0;padding:25px;text-align:center;border-radius:16px;box-shadow:0 4px 16px rgba(0,0,0,0.2);transition:all .3s;position:relative;overflow:hidden}
+        .summary-item::before{content:'';position:absolute;bottom:0;left:0;width:100%;height:4px;background:linear-gradient(90deg,#1976d2,#42a5f5,#90caf9);transform:scaleX(0);transition:transform .3s ease}
+        .summary-item:hover::before{transform:scaleX(1)}
+        .summary-item:hover{transform:translateY(-6px) scale(1.02);box-shadow:0 8px 24px rgba(0,0,0,0.25)}
+        .summary-label{font-size:1.05em;margin-bottom:12px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:#1976d2}
+        .summary-value{font-size:2.2em;font-weight:bold;color:#1565c0}
+        .footer{text-align:center;padding:30px 40px;color:#424242;font-size:1em;margin-top:0;background:linear-gradient(135deg,#e3f2fd 0%,#f5f5f5 100%);border-radius:0 0 24px 24px}
+        .footer p{margin:10px 0;line-height:1.7}
+        .footer strong{color:#1565c0}
+        .submit-section{text-align:center;margin-top:40px;padding:30px;background:linear-gradient(135deg,#e3f2fd 0%,#bbdefb 100%);border-radius:16px;box-shadow:0 4px 16px rgba(0,0,0,0.08)}
+        .submit-section button{background:linear-gradient(135deg,#1976d2 0%,#42a5f5 100%);color:#ffffff;border:none;padding:18px 50px;font-weight:700;cursor:pointer;font-size:1.2em;transition:all .3s;text-transform:uppercase;letter-spacing:1px;border-radius:50px;box-shadow:0 4px 16px rgba(25,118,210,0.3);position:relative;overflow:hidden}
+        .submit-section button::before{content:'';position:absolute;top:50%;left:50%;width:0;height:0;border-radius:50%;background:rgba(255,255,255,0.3);transform:translate(-50%,-50%);transition:width .6s,height .6s}
+        .submit-section button:hover::before{width:300px;height:300px}
+        .submit-section button:hover{background:linear-gradient(135deg,#1565c0 0%,#1976d2 100%);transform:translateY(-3px) scale(1.05);box-shadow:0 8px 24px rgba(25,118,210,0.4)}
+        .submit-section button:active{transform:translateY(-1px) scale(1.02)}
+        .submit-section button:disabled{background:linear-gradient(135deg,#bdbdbd 0%,#9e9e9e 100%);cursor:not-allowed;transform:none;box-shadow:none}
+        .submit-section button>span{position:relative;z-index:1}
+        #form-message{margin-top:18px;font-weight:600;font-size:1.05em}
+        .success{color:#1565c0;background:#ffffff;padding:14px;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+        .error{color:#d32f2f;background:#ffffff;padding:14px;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+        .validation-error{color:#d32f2f;font-size:0.95em;margin-top:8px;display:none;font-weight:600}
+        .dimension.missing-score{border:2px solid #d32f2f;animation:shake 0.5s}
+        @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1 class="discipline-title">語文學科</h1>
+        <p class="assessment-title">AI融合評估（中文科目）</p>
+    </header>
+
+    <form id="aisl-form" action="https://api.web3forms.com/submit" method="POST">
+        <input type="hidden" name="access_key" value="d912d581-0a0c-4c7d-8643-d6e7a9e34ade">
+        
+        <div class="form-section">
+            <div class="section-header">
+                <h2>甲部. 科目資料</h2>
+                <p class="section-subtitle">（請填寫本部分）</p>
+            </div>
+            
+            <div class="module-info">
+                <div><label for="module-name">科目編號</label><input type="text" id="module-name" name="module_code" placeholder="例如: LAN4103" required></div>
+                <div><label for="program-year">課程及年級</label><input type="text" id="program-year" name="program_year" placeholder="例如: 高級文憑一年級" required></div>
+                <div><label for="lead-teacher">教師</label><input type="text" id="lead-teacher" name="teacher" placeholder="教師姓名" required></div>
+                <div><label for="term">學年及學期</label><input type="text" id="term" name="term" placeholder="例如: 25/26學年第1學期" required></div>
+            </div>
+
+            <div class="framework-section">
+                <div class="framework-toggle-bar" id="framework-toggle" onclick="toggleFramework()">
+                    <div class="title-section">
+                        <h2>乙部. 評估框架</h2>
+                        <p class="section-subtitle">（供參考）</p>
+                    </div>
+                    <div class="icon">▼</div>
+                </div>
+
+                <div class="framework-content" id="framework-content">
+                    <h3>教學情境中AI應用的五個層次</h3>
+
+                    <div class="level-box">
+                        <strong>第1層：意識與探索</strong>
+                        <p>理解AI的能力和限制、學術誠信及版權問題。課堂示範包括句子重寫、摘要及關鍵詞提取。</p>
+                    </div>
+
+                    <div class="level-box">
+                        <strong>第2層：協助與效率</strong>
+                        <p>教師使用AI準備課程、起草題目和評語，以及整理資料。學生使用AI進行語言練習、摘要要點、改寫及準備演講稿。所有AI協助的作業必須經過人工審閱並清楚標示AI參與部分。</p>
+                    </div>
+
+                    <div class="level-box">
+                        <strong>第3層：擴增與共創</strong>
+                        <p>視AI為同儕夥伴，進行多版本腦力激盪、觀點比較及論證強度分析。學生必須提交其提問過程、選擇理由及人工修訂的文檔記錄。</p>
+                    </div>
+
+                    <div class="level-box">
+                        <strong>第4層：自動化與嵌入式評估</strong>
+                        <p>建立結構化教學流程，包括課前引導問題和詞彙、課堂形成性檢查及課後個人化練習。實施與評分準則一致的半自動化評分，再由教師審閱。</p>
+                    </div>
+
+                    <div class="level-box">
+                        <strong>第5層：數據驅動的優化與創新</strong>
+                        <p>使用班級和課程層面的數據（參與率、錯誤模式及進度指標）優化教材和教學方法。開發新的任務類型，如情境模擬、自建AI導師及跨學科項目。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-header">
+                <h2>丙部. 評估維度</h2>
+                <p class="section-subtitle">（請填寫本部分 - 所有評分均為必填）</p>
+            </div>
+
+            <div class="dimensions">
+                <!-- Dimension 1 -->
+                <div class="dimension" data-dim="1">
+                    <div class="dim-header">
+                        <div style="display:flex;align-items:center;flex:1">
+                            <span class="dim-number">1</span>
+                            <div class="dim-title">應用覆蓋範圍</div>
+                        </div>
+                        <span class="dim-score" id="score-1">–</span>
+                    </div>
+                    <div class="dim-description">整個科目中AI融合的一致性和系統化程度</div>
+                    <div class="score-guide">
+                        <div class="score-guide-title">參考以下例子並選擇評分</div>
+                        <div class="score-content">
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="1" data-val="0"><span>0</span></div>
+                                <span>科目中沒有AI融合</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="1" data-val="1"><span>1</span></div>
+                                <span>在個別課堂中偶爾使用AI（臨時性）</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="1" data-val="2"><span>2</span></div>
+                                <span>在多個課堂中定期使用AI（模式不一致）</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="1" data-val="3"><span>3</span></div>
+                                <span>在大部分課堂中系統性融合AI（有計劃的方法）</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="1" data-val="4"><span>4</span></div>
+                                <span>在整個科目中全面融合AI（結構化工作流程）</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="1" data-val="5"><span>5</span></div>
+                                <span>在所有科目組成部分中完全嵌入和優化AI融合</span>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="dim1_score" id="dim1_score" class="score-input" required>
+                    <div class="validation-error" id="error-1">請為此維度選擇評分</div>
+                    <div class="evidence">
+                        <label>如有證據請提供</label>
+                        <textarea placeholder="科目計劃、課堂時間表、學習管理系統活動記錄、教材清單" name="dim1_evidence" id="evidence-1"></textarea>
+                    </div>
+                </div>
+
+                <!-- Dimension 2 -->
+                <div class="dimension" data-dim="2">
+                    <div class="dim-header">
+                        <div style="display:flex;align-items:center;flex:1">
+                            <span class="dim-number">2</span>
+                            <div class="dim-title">教學應用深度</div>
+                        </div>
+                        <span class="dim-score" id="score-2">–</span>
+                    </div>
+                    <div class="dim-description">AI融合的教學複雜程度，對應第1至5層</div>
+                    <div class="score-guide">
+                        <div class="score-guide-title">參考以下例子並選擇評分</div>
+                        <div class="score-content">
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="2" data-val="0"><span>0</span></div>
+                                <span>完全沒有教學性AI應用</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="2" data-val="1"><span>1</span></div>
+                                <span>意識與探索活動（示範、討論）</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="2" data-val="2"><span>2</span></div>
+                                <span>協助與效率（練習、起草並經人工審閱）</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="2" data-val="3"><span>3</span></div>
+                                <span>擴增與共創（AI作為夥伴、批判性分析）</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="2" data-val="4"><span>4</span></div>
+                                <span>自動化與嵌入式工作流程（課前/課中/課後系統性融合）</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="2" data-val="5"><span>5</span></div>
+                                <span>數據驅動的優化與創新（基於分析的教學、新任務類型）</span>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="dim2_score" id="dim2_score" class="score-input" required>
+                    <div class="validation-error" id="error-2">請為此維度選擇評分</div>
+                    <div class="evidence">
+                        <label>如有證據請提供</label>
+                        <textarea placeholder="學習成果、課堂觀察、任務描述、顯示AI使用層次的學生作業樣本" name="dim2_evidence" id="evidence-2"></textarea>
+                    </div>
+                </div>
+
+                <!-- Dimension 3 -->
+                <div class="dimension" data-dim="3">
+                    <div class="dim-header">
+                        <div style="display:flex;align-items:center;flex:1">
+                            <span class="dim-number">3</span>
+                            <div class="dim-title">評估融合</div>
+                        </div>
+                        <span class="dim-score" id="score-3">–</span>
+                    </div>
+                    <div class="dim-description">在評估中融合AI，並設有學術誠信保障措施</div>
+                    <div class="score-guide">
+                        <div class="score-guide-title">參考以下例子並選擇評分</div>
+                        <div class="score-content">
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="3" data-val="0"><span>0</span></div>
+                                <span>評估中沒有AI融合</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="3" data-val="1"><span>1</span></div>
+                                <span>評估AI意識（AI能力/限制測驗、道德討論）</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="3" data-val="2"><span>2</span></div>
+                                <span>允許AI用於起草，但需引用並經人工審閱驗證</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="3" data-val="3"><span>3</span></div>
+                                <span>評估AI協作，評分準則涵蓋過程、理由及修訂</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="3" data-val="4"><span>4</span></div>
+                                <span>自動化AI輔助評估，需詳細過程文檔記錄</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="3" data-val="5"><span>5</span></div>
+                                <span>系統性評估AI素養，涵蓋創新、反思及優化維度</span>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="dim3_score" id="dim3_score" class="score-input" required>
+                    <div class="validation-error" id="error-3">請為此維度選擇評分</div>
+                    <div class="evidence">
+                        <label>如有證據請提供</label>
+                        <textarea placeholder="評估指引、AI使用政策、學生AI協作記錄、含AI標準的評分準則、道德測驗" name="dim3_evidence" id="evidence-3"></textarea>
+                    </div>
+                </div>
+
+                <!-- Dimension 4 -->
+                <div class="dimension" data-dim="4">
+                    <div class="dim-header">
+                        <div style="display:flex;align-items:center;flex:1">
+                            <span class="dim-number">4</span>
+                            <div class="dim-title">學生參與度</div>
+                        </div>
+                        <span class="dim-score" id="score-4">–</span>
+                    </div>
+                    <div class="dim-description">在學習活動中積極使用AI工具的學生百分比</div>
+                    <div class="score-guide">
+                        <div class="score-guide-title">參考以下例子並選擇評分</div>
+                        <div class="score-content">
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="4" data-val="0"><span>0</span></div>
+                                <span>0% 學生參與AI活動</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="4" data-val="1"><span>1</span></div>
+                                <span>少於20%學生使用AI</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="4" data-val="2"><span>2</span></div>
+                                <span>20-49%學生積極參與AI</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="4" data-val="3"><span>3</span></div>
+                                <span>50-79%學生定期使用AI工具</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="4" data-val="4"><span>4</span></div>
+                                <span>80-94%學生持續參與AI</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="4" data-val="5"><span>5</span></div>
+                                <span>95-100%學生完全參與AI</span>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="dim4_score" id="dim4_score" class="score-input" required>
+                    <div class="validation-error" id="error-4">請為此維度選擇評分</div>
+                    <div class="evidence">
+                        <label>如有證據請提供</label>
+                        <textarea placeholder="工具分析、學習管理系統參與記錄、使用報告、出席數據" name="dim4_evidence" id="evidence-4"></textarea>
+                    </div>
+                </div>
+
+                <!-- Dimension 5 -->
+                <div class="dimension" data-dim="5">
+                    <div class="dim-header">
+                        <div style="display:flex;align-items:center;flex:1">
+                            <span class="dim-number">5</span>
+                            <div class="dim-title">學習成效</div>
+                        </div>
+                        <span class="dim-score" id="score-5">–</span>
+                    </div>
+                    <div class="dim-description">通過可測量的進步展示的語言學習成效增益</div>
+                    <div class="score-guide">
+                        <div class="score-guide-title">參考以下例子並選擇評分</div>
+                        <div class="score-content">
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="5" data-val="0"><span>0</span></div>
+                                <span>尚未觀察到可測量的學習增益</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="5" data-val="1"><span>1</span></div>
+                                <span>在有限學習領域的小幅增益</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="5" data-val="2"><span>2</span></div>
+                                <span>在某些學習目標上的中等增益</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="5" data-val="3"><span>3</span></div>
+                                <span>在多個學習領域的大幅增益</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="5" data-val="4"><span>4</span></div>
+                                <span>大幅且持續的增益</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="5" data-val="5"><span>5</span></div>
+                                <span>所有學生群組的大幅持續增益</span>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="dim5_score" id="dim5_score" class="score-input" required>
+                    <div class="validation-error" id="error-5">請為此維度選擇評分</div>
+                    <div class="evidence">
+                        <label>如有證據請提供</label>
+                        <textarea placeholder="前後測數據、評分準則分數、錯誤率分析、TTR分數" name="dim5_evidence" id="evidence-5"></textarea>
+                    </div>
+                </div>
+
+                <!-- Dimension 6 -->
+                <div class="dimension" data-dim="6">
+                    <div class="dim-header">
+                        <div style="display:flex;align-items:center;flex:1">
+                            <span class="dim-number">6</span>
+                            <div class="dim-title">個人化與共融</div>
+                        </div>
+                        <span class="dim-score" id="score-6">–</span>
+                    </div>
+                    <div class="dim-description">為不同學習者提供的個人化AI支援和共融措施</div>
+                    <div class="score-guide">
+                        <div class="score-guide-title">參考以下例子並選擇評分</div>
+                        <div class="score-content">
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="6" data-val="0"><span>0</span></div>
+                                <span>未應用個人化或共融措施</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="6" data-val="1"><span>1</span></div>
+                                <span>臨時為少數學生提供支援</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="6" data-val="2"><span>2</span></div>
+                                <span>為部分學習者群組提供個人化支援</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="6" data-val="3"><span>3</span></div>
+                                <span>大部分學習者獲得度身訂造的AI支援</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="6" data-val="4"><span>4</span></div>
+                                <span>所有學習者獲得支援並有文檔記錄的增益</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="6" data-val="5"><span>5</span></div>
+                                <span>各群組之間的公平差距完全消除</span>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="dim6_score" id="dim6_score" class="score-input" required>
+                    <div class="validation-error" id="error-6">請為此維度選擇評分</div>
+                    <div class="evidence">
+                        <label>如有證據請提供</label>
+                        <textarea placeholder="非華語學生/特殊教育需要支援記錄、個別學習計劃文檔、語音轉文字/雙語工具記錄" name="dim6_evidence" id="evidence-6"></textarea>
+                    </div>
+                </div>
+
+                <!-- Dimension 7 -->
+                <div class="dimension" data-dim="7">
+                    <div class="dim-header">
+                        <div style="display:flex;align-items:center;flex:1">
+                            <span class="dim-number">7</span>
+                            <div class="dim-title">教師能力</div>
+                        </div>
+                        <span class="dim-score" id="score-7">–</span>
+                    </div>
+                    <div class="dim-description">教師在不同教學層次實施AI的能力</div>
+                    <div class="score-guide">
+                        <div class="score-guide-title">參考以下例子並選擇評分</div>
+                        <div class="score-content">
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="7" data-val="0"><span>0</span></div>
+                                <span>科目教師沒有AI能力建設</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="7" data-val="1"><span>1</span></div>
+                                <span>能實施意識與探索活動</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="7" data-val="2"><span>2</span></div>
+                                <span>能在指導下實施協助與效率任務</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="7" data-val="3"><span>3</span></div>
+                                <span>能獨立實施擴增與共創</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="7" data-val="4"><span>4</span></div>
+                                <span>能自信地實施自動化與嵌入式工作流程</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="7" data-val="5"><span>5</span></div>
+                                <span>能實施數據驅動的優化與創新，並作為他人導師</span>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="dim7_score" id="dim7_score" class="score-input" required>
+                    <div class="validation-error" id="error-7">請為此維度選擇評分</div>
+                    <div class="evidence">
+                        <label>如有證據請提供</label>
+                        <textarea placeholder="專業發展完成記錄、課堂觀察報告、展示複雜程度的課堂成果、同儕指導活動" name="dim7_evidence" id="evidence-7"></textarea>
+                    </div>
+                </div>
+
+                <!-- Dimension 8 -->
+                <div class="dimension" data-dim="8">
+                    <div class="dim-header">
+                        <div style="display:flex;align-items:center;flex:1">
+                            <span class="dim-number">8</span>
+                            <div class="dim-title">道德、私隱與安全</div>
+                        </div>
+                        <span class="dim-score" id="score-8">–</span>
+                    </div>
+                    <div class="dim-description">道德、私隱和安全的教學及評估實施</div>
+                    <div class="score-guide">
+                        <div class="score-guide-title">參考以下例子並選擇評分</div>
+                        <div class="score-content">
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="8" data-val="0"><span>0</span></div>
+                                <span>未涵蓋這些主題</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="8" data-val="1"><span>1</span></div>
+                                <span>提供這些主題的材料供自主學習</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="8" data-val="2"><span>2</span></div>
+                                <span>學生在專門課堂/單元中學習AI道德</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="8" data-val="3"><span>3</span></div>
+                                <span>通過測驗或作業正式評估學生</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="8" data-val="4"><span>4</span></div>
+                                <span>學生在實際作業中應用道德實踐（包括引用AI）</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="8" data-val="5"><span>5</span></div>
+                                <span>定期監察和驗證學生的道德實踐</span>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="dim8_score" id="dim8_score" class="score-input" required>
+                    <div class="validation-error" id="error-8">請為此維度選擇評分</div>
+                    <div class="evidence">
+                        <label>如有證據請提供</label>
+                        <textarea placeholder="道德測驗結果、學生反思記錄、審計報告" name="dim8_evidence" id="evidence-8"></textarea>
+                    </div>
+                </div>
+
+                <!-- Dimension 9 -->
+                <div class="dimension" data-dim="9">
+                    <div class="dim-header">
+                        <div style="display:flex;align-items:center;flex:1">
+                            <span class="dim-number">9</span>
+                            <div class="dim-title">AI工具與資源</div>
+                        </div>
+                        <span class="dim-score" id="score-9">–</span>
+                    </div>
+                    <div class="dim-description">科目中使用的AI工具和資源的範圍、質素和可及性</div>
+                    <div class="score-guide">
+                        <div class="score-guide-title">參考以下例子並選擇評分</div>
+                        <div class="score-content">
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="9" data-val="0"><span>0</span></div>
+                                <span>沒有可用的AI工具或資源</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="9" data-val="1"><span>1</span></div>
+                                <span>單一通用AI工具，基本使用權限</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="9" data-val="2"><span>2</span></div>
+                                <span>多種工具但僅限於語言學習基礎</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="9" data-val="3"><span>3</span></div>
+                                <span>針對科目目標度身訂造的工具套裝，並提供培訓</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="9" data-val="4"><span>4</span></div>
+                                <span>全面的工具包，含針對特定任務的定製/專門工具</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="9" data-val="5"><span>5</span></div>
+                                <span>尖端工具，與學習管理系統無縫整合並全面支援可及性</span>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="dim9_score" id="dim9_score" class="score-input" required>
+                    <div class="validation-error" id="error-9">請為此維度選擇評分</div>
+                    <div class="evidence">
+                        <label>如有證據請提供</label>
+                        <textarea placeholder="工具清單、使用指南、使用記錄、整合截圖、學生/教師反饋" name="dim9_evidence" id="evidence-9"></textarea>
+                    </div>
+                </div>
+
+                <!-- Dimension 10 -->
+                <div class="dimension" data-dim="10">
+                    <div class="dim-header">
+                        <div style="display:flex;align-items:center;flex:1">
+                            <span class="dim-number">10</span>
+                            <div class="dim-title">質素保證</div>
+                        </div>
+                        <span class="dim-score" id="score-10">–</span>
+                    </div>
+                    <div class="dim-description">系統性反思和迭代改進AI融合的證據</div>
+                    <div class="score-guide">
+                        <div class="score-guide-title">參考以下例子並選擇評分</div>
+                        <div class="score-content">
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="10" data-val="0"><span>0</span></div>
+                                <span>沒有反思或改進活動</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="10" data-val="1"><span>1</span></div>
+                                <span>教師之間關於AI使用的非正式討論</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="10" data-val="2"><span>2</span></div>
+                                <span>學期末收集並記錄學生反饋</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="10" data-val="3"><span>3</span></div>
+                                <span>定期檢討會議並實施行動計劃</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="10" data-val="4"><span>4</span></div>
+                                <span>結構化的PDCA循環，並有調整證據</span>
+                            </div>
+                            <div class="score-guide-item">
+                                <div class="score-btn-inline" data-dim="10" data-val="5"><span>5</span></div>
+                                <span>數據驅動的優化，學期之間有可測量的改進</span>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="dim10_score" id="dim10_score" class="score-input" required>
+                    <div class="validation-error" id="error-10">請為此維度選擇評分</div>
+                    <div class="evidence">
+                        <label>如有證據請提供</label>
+                        <textarea placeholder="會議紀錄、學生/同儕反饋摘要、教材版本歷史、改進記錄、比較分析數據" name="dim10_evidence" id="evidence-10"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary Dashboard -->
+            <div class="summary">
+                <h2>評估報告摘要</h2>
+                <p class="summary-subtitle">（請完成丙部以查看摘要）</p>
+                <div class="summary-grid">
+                    <div class="summary-item"><div class="summary-label">AIS-L 指數</div><div class="summary-value" id="aisl-index">--</div></div>
+                    <div class="summary-item"><div class="summary-label">AI 融合層次</div><div class="summary-value" id="ai-level">–</div></div>
+                    <div class="summary-item"><div class="summary-label">轉型狀況</div><div class="summary-value" id="transform-rate">--</div></div>
+                    <div class="summary-item"><div class="summary-label">覆蓋 ≥ 3.0</div><div class="summary-value" id="coverage-rate">--</div></div>
+                </div>
+            </div>
+
+            <!-- SUBMIT SECTION -->
+            <div class="submit-section">
+                <button type="submit" id="submit-btn"><span>提交評估</span></button>
+                <div id="form-message"></div>
+            </div>
+        </div>
+    </form>
+
+    <div class="footer">
+        <p><strong>使用方法：</strong>為每個維度選擇評分（0-5）→ 系統自動計算AIS-L指數和AI融合層次</p>
+        <p><strong>證據：</strong>包括課程計劃、學習管理系統截圖、評估記錄連結 | 於學期中/學期末更新並複製評分卡</p>
+    </div>
+</div>
+
+<script>
+function toggleFramework(){
+    const toggle = document.getElementById('framework-toggle');
+    const content = document.getElementById('framework-content');
+    toggle.classList.toggle('active');
+    content.classList.toggle('active');
+}
+
+const scores = Array(11).fill(null);
+const scoreDisplays = {}, evidenceAreas = {}, hiddenScoreInputs = {};
+
+for(let i=1;i<=10;i++){
+    scoreDisplays[i] = document.getElementById('score-'+i);
+    evidenceAreas[i] = document.getElementById('evidence-'+i);
+    hiddenScoreInputs[i] = document.getElementById('dim'+i+'_score');
+}
+
+document.querySelectorAll('.score-btn-inline').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+        const dim = parseInt(btn.dataset.dim);
+        const val = parseInt(btn.dataset.val);
+        
+        document.querySelectorAll(`.score-btn-inline[data-dim="${dim}"]`).forEach(b=>b.classList.remove('selected'));
+        btn.classList.add('selected');
+        
+        scores[dim] = val;
+        hiddenScoreInputs[dim].value = val;
+        
+        const errorMsg = document.getElementById('error-' + dim);
+        const dimBox = document.querySelector(`.dimension[data-dim="${dim}"]`);
+        if(errorMsg) errorMsg.style.display = 'none';
+        if(dimBox) dimBox.classList.remove('missing-score');
+        
+        updateScoreDisplay(dim);
+        calculateSummary();
+    });
+});
+
+function updateScoreDisplay(dim){
+    const s = scores[dim];
+    const disp = scoreDisplays[dim];
+    disp.textContent = s!==null?s:'–';
+}
+
+function calculateSummary(){
+    const valid = scores.slice(1).filter(v=>v!==null);
+    let index='--', aiLevel='–', transform='--', coverage='--';
+
+    if(valid.length===10){
+        index = (valid.reduce((a,b)=>a+b,0)/10).toFixed(1);
+
+        const depth = scores[2], assess = scores[3], engage = scores[4], qa = scores[10];
+        if(depth>=5 && assess>=4 && qa>=4 && engage>=4) aiLevel='5. 數據驅動創新';
+        else if(depth>=4 && assess>=3) aiLevel='4. 自動化與評估';
+        else if(depth>=3) aiLevel='3. 擴增與共創';
+        else if(depth>=2) aiLevel='2. 協助與效率';
+        else if(depth>=1) aiLevel='1. 意識與探索';
+        else aiLevel='0. 未開始';
+
+        transform = depth>=4?'已達成':'未達成';
+        coverage = parseFloat(index)>=3.0?'已達成':'未達成';
+    }
+
+    document.getElementById('aisl-index').textContent = index;
+    document.getElementById('ai-level').textContent = aiLevel;
+    document.getElementById('transform-rate').textContent = transform;
+    document.getElementById('coverage-rate').textContent = coverage;
+}
+
+const form = document.getElementById('aisl-form');
+const submitBtn = document.getElementById('submit-btn');
+const msgDiv = document.getElementById('form-message');
+
+form.addEventListener('submit', async e=>{
+    e.preventDefault();
+    
+    let allScoresValid = true;
+    for(let i=1; i<=10; i++){
+        if(scores[i] === null){
+            allScoresValid = false;
+            const errorMsg = document.getElementById('error-' + i);
+            const dimBox = document.querySelector(`.dimension[data-dim="${i}"]`);
+            if(errorMsg) errorMsg.style.display = 'block';
+            if(dimBox) {
+                dimBox.classList.add('missing-score');
+                setTimeout(() => dimBox.classList.remove('missing-score'), 500);
+            }
+        }
+    }
+    
+    if(!allScoresValid){
+        msgDiv.textContent = '請在提交前為所有10個維度選擇評分。';
+        msgDiv.className = 'error';
+        for(let i=1; i<=10; i++){
+            if(scores[i] === null){
+                document.querySelector(`.dimension[data-dim="${i}"]`).scrollIntoView({behavior: 'smooth', block: 'center'});
+                break;
+            }
+        }
+        return;
+    }
+    
+    submitBtn.disabled = true;
+    submitBtn.querySelector('span').textContent = '提交中...';
+    msgDiv.textContent = '';
+    msgDiv.className = '';
+
+    try{
+        const response = await fetch(form.action,{
+            method:'POST',
+            body:new FormData(form)
+        });
+        const data = await response.json();
+        if(data.success){
+            msgDiv.textContent = '提交成功！感謝您的評估。';
+            msgDiv.className = 'success';
+            form.reset();
+            scores.fill(null,1);
+            document.querySelectorAll('.score-btn-inline').forEach(b=>b.classList.remove('selected'));
+            for(let i=1;i<=10;i++) updateScoreDisplay(i);
+            calculateSummary();
+        }else{
+            throw new Error(data.message||'未知錯誤');
+        }
+    }catch(err){
+        msgDiv.textContent = '提交失敗：'+err.message;
+        msgDiv.className = 'error';
+    }finally{
+        submitBtn.disabled = false;
+        submitBtn.querySelector('span').textContent = '提交評估';
+    }
+});
+</script>
+</body>
+</html>
